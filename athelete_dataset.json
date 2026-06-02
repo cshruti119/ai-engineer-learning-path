@@ -1,0 +1,36 @@
+[
+  {
+    "prompt_inputs": {
+      "height": "178",
+      "weight": "85",
+      "activity_level": "active",
+      "goal": "muscle gain",
+      "restrictions": "vegetarian"
+    },
+    "solution_criteria": [
+      "Meal plan covers one full day with breakfast, lunch, dinner, and snacks",
+      "Protein distributed evenly across meals (minimum 25-30g per meal for muscle gain)",
+      "All foods comply with vegetarian restrictions",
+      "Includes post-workout recovery nutrition appropriate for strength training",
+      "Plan is concise and practical to execute"
+    ],
+    "task_description": "Write a compact consise 1 day meal plan for the athelete",
+    "scenario": "Testing with a strength-sport athlete (weightlifter) focusing on protein distribution across meals and recovery nutrition, with specific dietary restrictions (e.g., vegetarian)"
+  },
+  {
+    "prompt_inputs": {
+      "height": "178 cm",
+      "weight": "68 kg",
+      "activity_level": "very active",
+      "goal": "carbohydrate loading for marathon training",
+      "restrictions": "none"
+    },
+    "solution_criteria": [
+      "Meal plan includes 4-5 meals/snacks strategically timed around training sessions",
+      "Daily caloric intake is 3000+ calories with carbohydrates comprising 60-65% of total calories",
+      "Pre-workout meal is consumed 2-3 hours before training; post-workout meal within 30-60 minutes of completion"
+    ],
+    "task_description": "Write a compact consise 1 day meal plan for the athelete",
+    "scenario": "Testing with a high-endurance athlete (marathon runner) requiring high caloric intake and carbohydrate loading, emphasizing timing of meals around training sessions"
+  }
+]

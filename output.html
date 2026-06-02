@@ -1,0 +1,194 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Prompt Evaluation Report</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+                color: #333;
+            }
+            .header {
+                background-color: #f0f0f0;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            .summary-stats {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .stat-box {
+                background-color: #fff;
+                border-radius: 5px;
+                padding: 15px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                flex-basis: 30%;
+                min-width: 200px;
+            }
+            .stat-value {
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th {
+                background-color: #4a4a4a;
+                color: white;
+                text-align: left;
+                padding: 12px;
+            }
+            td {
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+                vertical-align: top;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .output-cell {
+                white-space: pre-wrap;
+            }
+            .score {
+                font-weight: bold;
+                padding: 5px 10px;
+                border-radius: 3px;
+                display: inline-block;
+            }
+            .score-high {
+                background-color: #c8e6c9;
+                color: #2e7d32;
+            }
+            .score-medium {
+                background-color: #fff9c4;
+                color: #f57f17;
+            }
+            .score-low {
+                background-color: #ffcdd2;
+                color: #c62828;
+            }
+            .output {
+                overflow: auto;
+                white-space: pre-wrap;
+            }
+
+            .output pre {
+                background-color: #f5f5f5;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 10px;
+                margin: 0;
+                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                font-size: 14px;
+                line-height: 1.4;
+                color: #333;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                overflow-x: auto;
+                white-space: pre-wrap; 
+                word-wrap: break-word; 
+            }
+
+            td {
+                width: 20%;
+            }
+            .score-col {
+                width: 80px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Prompt Evaluation Report</h1>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div>Total Test Cases</div>
+                    <div class="stat-value">2</div>
+                </div>
+                <div class="stat-box">
+                    <div>Average Score</div>
+                    <div class="stat-value">8.5 / 10</div>
+                </div>
+                <div class="stat-box">
+                    <div>Pass Rate (≥7)</div>
+                    <div class="stat-value">100.0%</div>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Prompt Inputs</th>
+                    <th>Solution Criteria</th>
+                    <th>Output</th>
+                    <th>Score</th>
+                    <th>Reasoning</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+            <tr>
+                <td>Testing with a dense interdisciplinary passage containing overlapping topics (e.g., a biology paper discussing quantum mechanics applications in protein folding) to evaluate whether the prompt can disambiguate and extract distinct, non-redundant topics</td>
+                <td class="prompt-inputs"><strong>content:</strong> Recent advances in computational biophysics have leveraged quantum mechanical principles to elucidate protein folding dynamics. By applying quantum tunneling models to describe hydrogen bond formation, researchers have demonstrated that classical molecular dynamics simulations underestimate folding rates by 40%. Furthermore, quantum entanglement effects in electron transfer chains within mitochondrial complexes suggest that enzymatic catalysis operates partially through quantum coherence mechanisms. These findings integrate quantum chemistry, structural biology, and computational modeling to challenge the traditional view that proteins fold through purely classical thermodynamic pathways. Machine learning algorithms trained on quantum-derived features now predict protein tertiary structures with unprecedented accuracy, bridging quantum physics, bioinformatics, and structural prediction.</td>
+                <td class="criteria">• Extracts distinct topics without redundancy (e.g., does not list both 'protein folding' and 'protein dynamics' as separate topics if they refer to the same concept)<br>• Identifies all major interdisciplinary domains present (quantum mechanics, structural biology, computational methods, enzymatic catalysis)<br>• Avoids over-fragmentation while capturing meaningful topic distinctions across the overlapping domains</td>
+                <td class="output"><pre>
+[
+  "Quantum Mechanical Principles in Protein Folding",
+  "Quantum Tunneling in Hydrogen Bond Formation",
+  "Molecular Dynamics Simulations",
+  "Quantum Entanglement in Electron Transfer",
+  "Enzymatic Catalysis and Quantum Coherence",
+  "Mitochondrial Complex Mechanisms",
+  "Quantum Chemistry",
+  "Structural Biology",
+  "Machine Learning for Protein Structure Prediction",
+  "Bioinformatics"
+]
+</pre></td>
+                <td class="score-col"><span class="score score-high">8</span></td>
+                <td class="reasoning">The solution meets all mandatory requirements: it is a valid JSON array of strings with only topic names and no extra commentary. Regarding secondary criteria, it successfully identifies all major interdisciplinary domains and avoids severe fragmentation. However, there is minor redundancy between the first two topics (both address quantum effects in protein folding mechanisms) and slight over-fragmentation with 'Mitochondrial Complex Mechanisms' being a specific context rather than a distinct topic. The solution is strong overall but has room for consolidation to better meet the 'without redundancy' criterion.</td>
+            </tr>
+        
+            <tr>
+                <td>Testing with a passage containing implicit topics that require inference and domain knowledge (e.g., a climate science abstract mentioning 'carbon sequestration' and 'photosynthesis' without explicitly stating 'environmental science') to assess whether the prompt extracts topics at appropriate levels of specificity</td>
+                <td class="prompt-inputs"><strong>content:</strong> Recent advances in tropical forest ecosystems reveal the critical role of mycorrhizal networks in nutrient cycling and carbon sequestration. Through photosynthesis, these forests fix atmospheric CO2 while simultaneously maintaining soil microbial communities that enhance phosphorus availability. The symbiotic relationships between fungal associates and plant roots exemplify nature's approach to climate regulation, with implications for understanding terrestrial carbon sinks and their vulnerability to anthropogenic disturbance. Our analysis of these belowground processes demonstrates how biodiversity loss directly compromises the ecosystem's capacity for long-term carbon storage.</td>
+                <td class="criteria">• Extracts explicit topics (mycorrhizal networks, photosynthesis, carbon sequestration, soil microbial communities, nutrient cycling)<br>• Identifies implicit topics requiring domain inference (climate regulation, ecosystem services, carbon sinks, biodiversity-ecosystem function relationships)<br>• Distinguishes between specific mechanisms and broader conceptual frameworks without conflating them<br>• Returns output as a JSON array of strings with appropriate specificity for scholarly context</td>
+                <td class="output"><pre>
+[
+  "Mycorrhizal Networks",
+  "Tropical Forest Ecosystems",
+  "Nutrient Cycling",
+  "Carbon Sequestration",
+  "Photosynthesis",
+  "Soil Microbial Communities",
+  "Phosphorus Availability",
+  "Fungal-Plant Root Symbiosis",
+  "Climate Regulation",
+  "Terrestrial Carbon Sinks",
+  "Anthropogenic Disturbance",
+  "Belowground Processes",
+  "Biodiversity Loss",
+  "Carbon Storage"
+]
+</pre></td>
+                <td class="score-col"><span class="score score-high">9</span></td>
+                <td class="reasoning">The solution fully satisfies all mandatory requirements: it is a valid JSON array of strings containing only topics without extra commentary. It successfully identifies both explicit topics directly stated in the passage and implicit topics requiring domain knowledge inference. The distinction between specific mechanisms and broader frameworks is well-maintained (e.g., 'Photosynthesis' vs. 'Climate Regulation'). The primary deficiency is the inclusion of 'Carbon Storage' alongside 'Carbon Sequestration,' which are essentially synonymous in this context and represent redundant topic extraction. This is a minor issue that does not violate mandatory requirements but represents a slight inefficiency in topic selection.</td>
+            </tr>
+        
+            </tbody>
+        </table>
+    </body>
+    </html>
+    

@@ -1,0 +1,17 @@
+[
+    {
+        "task": "Parse an AWS S3 bucket name from an S3 URI string (e.g., 's3://my-bucket-name/path/to/object')",
+        "format": "regex",
+        "solution_criteria": "Regex must correctly extract bucket name from valid S3 URIs and handle URIs with or without object paths"
+    },
+    {
+        "task": "Create a JSON object representing an AWS IAM policy that allows read-only access to a specific S3 bucket",
+        "format": "json",
+        "solution_criteria": "JSON must include valid Structure with Version, Statement, Effect set to Allow, Action limited to s3:GetObject and s3:ListBucket, and Resource restricted to the specified bucket ARN"
+    },
+    {
+        "task": "Write a Python function that converts an AWS CloudWatch log timestamp (Unix milliseconds) to a human-readable ISO 8601 format string",
+        "format": "python",
+        "solution_criteria": "Function must correctly convert Unix milliseconds to ISO 8601 format, handle edge cases like zero/negative timestamps, and return a properly formatted datetime string"
+    }
+]

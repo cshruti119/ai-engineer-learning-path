@@ -1,0 +1,37 @@
+[
+  {
+    "output": "\n[\n  \"Quantum Mechanical Principles in Protein Folding\",\n  \"Quantum Tunneling in Hydrogen Bond Formation\",\n  \"Molecular Dynamics Simulations\",\n  \"Quantum Entanglement in Electron Transfer\",\n  \"Enzymatic Catalysis and Quantum Coherence\",\n  \"Mitochondrial Complex Mechanisms\",\n  \"Quantum Chemistry\",\n  \"Structural Biology\",\n  \"Machine Learning for Protein Structure Prediction\",\n  \"Bioinformatics\"\n]\n",
+    "test_case": {
+      "prompt_inputs": {
+        "content": "Recent advances in computational biophysics have leveraged quantum mechanical principles to elucidate protein folding dynamics. By applying quantum tunneling models to describe hydrogen bond formation, researchers have demonstrated that classical molecular dynamics simulations underestimate folding rates by 40%. Furthermore, quantum entanglement effects in electron transfer chains within mitochondrial complexes suggest that enzymatic catalysis operates partially through quantum coherence mechanisms. These findings integrate quantum chemistry, structural biology, and computational modeling to challenge the traditional view that proteins fold through purely classical thermodynamic pathways. Machine learning algorithms trained on quantum-derived features now predict protein tertiary structures with unprecedented accuracy, bridging quantum physics, bioinformatics, and structural prediction."
+      },
+      "solution_criteria": [
+        "Extracts distinct topics without redundancy (e.g., does not list both 'protein folding' and 'protein dynamics' as separate topics if they refer to the same concept)",
+        "Identifies all major interdisciplinary domains present (quantum mechanics, structural biology, computational methods, enzymatic catalysis)",
+        "Avoids over-fragmentation while capturing meaningful topic distinctions across the overlapping domains"
+      ],
+      "task_description": "Extract topics out of a passage of text from a scholarly article into a JSON array of strings.",
+      "scenario": "Testing with a dense interdisciplinary passage containing overlapping topics (e.g., a biology paper discussing quantum mechanics applications in protein folding) to evaluate whether the prompt can disambiguate and extract distinct, non-redundant topics"
+    },
+    "score": 8,
+    "reasoning": "The solution meets all mandatory requirements: it is a valid JSON array of strings with only topic names and no extra commentary. Regarding secondary criteria, it successfully identifies all major interdisciplinary domains and avoids severe fragmentation. However, there is minor redundancy between the first two topics (both address quantum effects in protein folding mechanisms) and slight over-fragmentation with 'Mitochondrial Complex Mechanisms' being a specific context rather than a distinct topic. The solution is strong overall but has room for consolidation to better meet the 'without redundancy' criterion."
+  },
+  {
+    "output": "\n[\n  \"Mycorrhizal Networks\",\n  \"Tropical Forest Ecosystems\",\n  \"Nutrient Cycling\",\n  \"Carbon Sequestration\",\n  \"Photosynthesis\",\n  \"Soil Microbial Communities\",\n  \"Phosphorus Availability\",\n  \"Fungal-Plant Root Symbiosis\",\n  \"Climate Regulation\",\n  \"Terrestrial Carbon Sinks\",\n  \"Anthropogenic Disturbance\",\n  \"Belowground Processes\",\n  \"Biodiversity Loss\",\n  \"Carbon Storage\"\n]\n",
+    "test_case": {
+      "prompt_inputs": {
+        "content": "Recent advances in tropical forest ecosystems reveal the critical role of mycorrhizal networks in nutrient cycling and carbon sequestration. Through photosynthesis, these forests fix atmospheric CO2 while simultaneously maintaining soil microbial communities that enhance phosphorus availability. The symbiotic relationships between fungal associates and plant roots exemplify nature's approach to climate regulation, with implications for understanding terrestrial carbon sinks and their vulnerability to anthropogenic disturbance. Our analysis of these belowground processes demonstrates how biodiversity loss directly compromises the ecosystem's capacity for long-term carbon storage."
+      },
+      "solution_criteria": [
+        "Extracts explicit topics (mycorrhizal networks, photosynthesis, carbon sequestration, soil microbial communities, nutrient cycling)",
+        "Identifies implicit topics requiring domain inference (climate regulation, ecosystem services, carbon sinks, biodiversity-ecosystem function relationships)",
+        "Distinguishes between specific mechanisms and broader conceptual frameworks without conflating them",
+        "Returns output as a JSON array of strings with appropriate specificity for scholarly context"
+      ],
+      "task_description": "Extract topics out of a passage of text from a scholarly article into a JSON array of strings.",
+      "scenario": "Testing with a passage containing implicit topics that require inference and domain knowledge (e.g., a climate science abstract mentioning 'carbon sequestration' and 'photosynthesis' without explicitly stating 'environmental science') to assess whether the prompt extracts topics at appropriate levels of specificity"
+    },
+    "score": 9,
+    "reasoning": "The solution fully satisfies all mandatory requirements: it is a valid JSON array of strings containing only topics without extra commentary. It successfully identifies both explicit topics directly stated in the passage and implicit topics requiring domain knowledge inference. The distinction between specific mechanisms and broader frameworks is well-maintained (e.g., 'Photosynthesis' vs. 'Climate Regulation'). The primary deficiency is the inclusion of 'Carbon Storage' alongside 'Carbon Sequestration,' which are essentially synonymous in this context and represent redundant topic extraction. This is a minor issue that does not violate mandatory requirements but represents a slight inefficiency in topic selection."
+  }
+]

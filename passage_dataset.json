@@ -1,0 +1,27 @@
+[
+  {
+    "prompt_inputs": {
+      "content": "Recent advances in computational biophysics have leveraged quantum mechanical principles to elucidate protein folding dynamics. By applying quantum tunneling models to describe hydrogen bond formation, researchers have demonstrated that classical molecular dynamics simulations underestimate folding rates by 40%. Furthermore, quantum entanglement effects in electron transfer chains within mitochondrial complexes suggest that enzymatic catalysis operates partially through quantum coherence mechanisms. These findings integrate quantum chemistry, structural biology, and computational modeling to challenge the traditional view that proteins fold through purely classical thermodynamic pathways. Machine learning algorithms trained on quantum-derived features now predict protein tertiary structures with unprecedented accuracy, bridging quantum physics, bioinformatics, and structural prediction."
+    },
+    "solution_criteria": [
+      "Extracts distinct topics without redundancy (e.g., does not list both 'protein folding' and 'protein dynamics' as separate topics if they refer to the same concept)",
+      "Identifies all major interdisciplinary domains present (quantum mechanics, structural biology, computational methods, enzymatic catalysis)",
+      "Avoids over-fragmentation while capturing meaningful topic distinctions across the overlapping domains"
+    ],
+    "task_description": "Extract topics out of a passage of text from a scholarly article into a JSON array of strings.",
+    "scenario": "Testing with a dense interdisciplinary passage containing overlapping topics (e.g., a biology paper discussing quantum mechanics applications in protein folding) to evaluate whether the prompt can disambiguate and extract distinct, non-redundant topics"
+  },
+  {
+    "prompt_inputs": {
+      "content": "Recent advances in tropical forest ecosystems reveal the critical role of mycorrhizal networks in nutrient cycling and carbon sequestration. Through photosynthesis, these forests fix atmospheric CO2 while simultaneously maintaining soil microbial communities that enhance phosphorus availability. The symbiotic relationships between fungal associates and plant roots exemplify nature's approach to climate regulation, with implications for understanding terrestrial carbon sinks and their vulnerability to anthropogenic disturbance. Our analysis of these belowground processes demonstrates how biodiversity loss directly compromises the ecosystem's capacity for long-term carbon storage."
+    },
+    "solution_criteria": [
+      "Extracts explicit topics (mycorrhizal networks, photosynthesis, carbon sequestration, soil microbial communities, nutrient cycling)",
+      "Identifies implicit topics requiring domain inference (climate regulation, ecosystem services, carbon sinks, biodiversity-ecosystem function relationships)",
+      "Distinguishes between specific mechanisms and broader conceptual frameworks without conflating them",
+      "Returns output as a JSON array of strings with appropriate specificity for scholarly context"
+    ],
+    "task_description": "Extract topics out of a passage of text from a scholarly article into a JSON array of strings.",
+    "scenario": "Testing with a passage containing implicit topics that require inference and domain knowledge (e.g., a climate science abstract mentioning 'carbon sequestration' and 'photosynthesis' without explicitly stating 'environmental science') to assess whether the prompt extracts topics at appropriate levels of specificity"
+  }
+]
