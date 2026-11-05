@@ -1,0 +1,20 @@
+[project]
+name = "research-coordinator"
+version = "0.1.0"
+description = "Learning project: a hub-and-spoke multi-agent research coordinator"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic",
+    "ipykernel",
+    "langgraph",
+    "ollama>=0.6.3",
+    "pydantic>=2",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
