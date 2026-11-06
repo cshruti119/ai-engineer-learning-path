@@ -4,6 +4,8 @@ These schemas are contracts. Because the hub receives typed objects instead of
 free text, its routing logic can be plain Python rather than string parsing.
 """
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -30,6 +32,10 @@ class SubagentTask(BaseModel):
     """One self-contained unit of work. A subagent sees this and nothing else."""
 
     title: str = Field(description="A short name for the task.")
+    agent: Literal["web_search", "document_analysis"] = Field(
+        default="web_search",
+        description="web_search for public information; document_analysis only for the user's own documents.",
+    )
     objective: str = Field(description="What this subagent must find out.")
     context: str = Field(
         description="The requirements, assumptions and scope limits this subagent needs to work alone."
@@ -43,3 +49,12 @@ class ResearchPlan(BaseModel):
     """The brief, split into tasks that can be handed to subagents."""
 
     tasks: list[SubagentTask] = Field(description="Independent tasks that together cover the brief.")
+
+
+class SubagentResult(BaseModel):
+    """What a subagent hands back to the hub."""
+
+    summary: str = Field(description="The answer to the task objective, in a few paragraphs.")
+    findings: list[str] = Field(description="Specific findings, each one a single claim.")
+    sources: list[str] = Field(description="Where each finding came from: a URL or a document name.")
+    gaps: list[str] = Field(description="Anything the task asked for that could not be found.")

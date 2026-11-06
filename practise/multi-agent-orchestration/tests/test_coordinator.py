@@ -18,6 +18,7 @@ from research_coordinator.prompts import COORDINATOR_ROLE, MAX_TASKS, MIN_TASKS
 from research_coordinator.schemas import (
     ResearchBrief,
     ResearchPlan,
+    SubagentResult,
     SubagentTask,
     TopicAssessment,
 )
@@ -53,6 +54,8 @@ class FakeLLM:
             self.assess_prompts.append(prompt)
             questions = self.question_rounds.pop(0) if self.question_rounds else []
             return TopicAssessment(questions=questions)
+        if schema is SubagentResult:
+            return SubagentResult(summary="s", findings=[], sources=[], gaps=[])
         if schema is ResearchPlan:
             self.decompose_prompts.append(prompt)
             return ResearchPlan(tasks=[make_task() for _ in range(self.task_count)])
@@ -147,8 +150,8 @@ def test_every_stage_is_told_the_coordinator_role():
     coordinator.invoke(start_state("Energy"), CONFIG)
     coordinator.invoke(Command(resume=["Europe"]), CONFIG)
 
-    assert len(llm.systems) == 4
-    assert all(COORDINATOR_ROLE in system for system in llm.systems)
+    hub_systems = llm.systems[:4]  # Later calls are subagents, which have their own roles.
+    assert all(COORDINATOR_ROLE in system for system in hub_systems)
 
 
 @pytest.mark.parametrize("responsibility", ["Clarification", "Decomposition", "Observability", "Error handling"])

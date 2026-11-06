@@ -23,7 +23,7 @@ def run(topic: str) -> dict:
         print("\nThe coordinator has some questions (press Enter to skip one):")
         answers = [input(f"\n{question}\n> ") for question in questions]
         result = coordinator.invoke(Command(resume=answers), config)
-    return {"brief": result["brief"], "tasks": result["tasks"]}
+    return {"brief": result["brief"], "tasks": result["tasks"], "results": result["results"]}
 
 
 def main() -> int:

@@ -2,7 +2,7 @@
 
     START -> assess_topic -> (unclear?) -> ask_user -> assess_topic ...
                  |
-                 +-> (clear) -> write_brief -> decompose_topic -> END
+                 +-> (clear) -> write_brief -> decompose_topic -> run_research -> END
 
 The hub's full job description is COORDINATOR_ROLE in prompts.py. Nodes are small
 functions that read the shared state and return only the keys they change.
@@ -30,6 +30,7 @@ from research_coordinator.prompts import (
     MIN_TASKS,
 )
 from research_coordinator.schemas import ResearchBrief, ResearchPlan, TopicAssessment
+from research_coordinator.subagents import run_subagents
 
 MIN_TOPIC_LENGTH = 3
 MAX_TOPIC_LENGTH = 1000
@@ -47,9 +48,13 @@ class CoordinatorState(TypedDict):
     clarification_rounds: int
     brief: dict[str, Any] | None
     tasks: list[dict[str, Any]] | None
+    # Documents the user supplied, as {"name": ..., "text": ...}.
+    documents: list[dict[str, str]]
+    # One record per subagent: task_id, agent, status, error, result.
+    results: list[dict[str, Any]] | None
 
 
-def start_state(topic: str) -> CoordinatorState:
+def start_state(topic: str, documents: list[dict[str, str]] | None = None) -> CoordinatorState:
     """Validate a raw topic and build the state that starts a run."""
     topic = " ".join(topic.split())
     if len(topic) < MIN_TOPIC_LENGTH:
@@ -63,6 +68,8 @@ def start_state(topic: str) -> CoordinatorState:
         "clarification_rounds": 0,
         "brief": None,
         "tasks": None,
+        "documents": documents or [],
+        "results": None,
     }
 
 
@@ -115,6 +122,9 @@ def build_coordinator(llm: Callable = ask_llm, checkpointer: Any = None):
             ]
         }
 
+    def run_research(state: CoordinatorState) -> dict:
+        return {"results": run_subagents(state["tasks"], state["brief"], state["documents"], llm)}
+
     def route_after_assessment(state: CoordinatorState) -> str:
         # The hub's control flow is ordinary code. Claude supplies the judgement,
         # and this limit guarantees the conversation ends.
@@ -127,12 +137,14 @@ def build_coordinator(llm: Callable = ask_llm, checkpointer: Any = None):
     graph.add_node("ask_user", ask_user)
     graph.add_node("write_brief", write_brief)
     graph.add_node("decompose_topic", decompose_topic)
+    graph.add_node("run_research", run_research)
     graph.add_edge(START, "assess_topic")
     graph.add_conditional_edges("assess_topic", route_after_assessment, ["ask_user", "write_brief"])
     graph.add_edge("ask_user", "assess_topic")
     # Decomposition is only reachable through this edge, after clarification ends.
     graph.add_edge("write_brief", "decompose_topic")
-    graph.add_edge("decompose_topic", END)
+    graph.add_edge("decompose_topic", "run_research")
+    graph.add_edge("run_research", END)
 
     # interrupt() needs a checkpointer: it saves the state while waiting for the user.
     return graph.compile(checkpointer=checkpointer or InMemorySaver())
