@@ -16,6 +16,7 @@ from research_coordinator.coordinator import (
 from research_coordinator.llm import CoordinatorError
 from research_coordinator.prompts import COORDINATOR_ROLE, MAX_TASKS, MIN_TASKS
 from research_coordinator.schemas import (
+    CoverageAssessment,
     ResearchBrief,
     ResearchPlan,
     SubagentResult,
@@ -54,6 +55,8 @@ class FakeLLM:
             self.assess_prompts.append(prompt)
             questions = self.question_rounds.pop(0) if self.question_rounds else []
             return TopicAssessment(questions=questions)
+        if schema is CoverageAssessment:
+            return CoverageAssessment(items=[])
         if schema is SubagentResult:
             return SubagentResult(summary="s", findings=[], sources=[], gaps=[])
         if schema is ResearchPlan:

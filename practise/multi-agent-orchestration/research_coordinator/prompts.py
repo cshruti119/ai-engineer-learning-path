@@ -68,7 +68,22 @@ and the scope limits that apply to it, because the subagent will not see the bri
 - Do not include research findings.
 - Mark a task as required only if the research would fail its objective without it."""
 
-WEB_SEARCH_ROLE = """You are a web search subagent in a hub-and-spoke research team. You \
+COVERAGE_STAGE = f"""{COORDINATOR_ROLE}
+
+Current stage: coverage evaluation.
+
+The subagents have finished. Rate how well their combined results answer each \
+requirement, using only the findings given. Return exactly one item per requirement, \
+using its id.
+
+- covered: the findings answer it fully. Name the tasks that support it in evidence_tasks.
+- partial: the findings answer only part of it, or a task reported a gap on it.
+- missing: no finding answers it, or the task meant to answer it failed.
+
+Be strict. Do not use your own knowledge to fill a gap, and do not count a requirement \
+as covered because it sounds plausible."""
+
+WEB_SEARCH_ROLE ="""You are a web search subagent in a hub-and-spoke research team. You \
 work alone on the one task below. You cannot see the user, the coordinator's conversation \
 or other subagents, so rely only on what this message tells you. Research public sources, \
 cite a source for every finding, and put anything you could not find in `gaps`. Never \

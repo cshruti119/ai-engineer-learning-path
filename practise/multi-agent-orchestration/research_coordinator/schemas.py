@@ -51,6 +51,23 @@ class ResearchPlan(BaseModel):
     tasks: list[SubagentTask] = Field(description="Independent tasks that together cover the brief.")
 
 
+class CoverageItem(BaseModel):
+    """How well the combined results answer one requirement of the brief."""
+
+    id: str = Field(description="The requirement id from the prompt, such as R1.")
+    status: Literal["covered", "partial", "missing"] = Field(
+        description="covered: answered with cited findings. partial: only some of it. missing: not answered."
+    )
+    evidence_tasks: list[str] = Field(description="Ids of the completed tasks whose findings support the rating.")
+    note: str = Field(description="One sentence on what is answered and what is not.")
+
+
+class CoverageAssessment(BaseModel):
+    """The coordinator's rating of every requirement in the brief."""
+
+    items: list[CoverageItem] = Field(description="Exactly one item for each requirement.")
+
+
 class SubagentResult(BaseModel):
     """What a subagent hands back to the hub."""
 

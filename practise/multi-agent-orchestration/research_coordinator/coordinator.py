@@ -2,7 +2,8 @@
 
     START -> assess_topic -> (unclear?) -> ask_user -> assess_topic ...
                  |
-                 +-> (clear) -> write_brief -> decompose_topic -> run_research -> END
+                 +-> (clear) -> write_brief -> decompose_topic -> run_research
+                                                             -> aggregate_results -> evaluate_coverage -> END
 
 The hub's full job description is COORDINATOR_ROLE in prompts.py. Nodes are small
 functions that read the shared state and return only the keys they change.
@@ -20,6 +21,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
+from research_coordinator.aggregation import aggregate_results, evaluate_coverage
 from research_coordinator.llm import CoordinatorError, ask_llm
 from research_coordinator.prompts import (
     ASSESS_STAGE,
@@ -52,6 +54,9 @@ class CoordinatorState(TypedDict):
     documents: list[dict[str, str]]
     # One record per subagent: task_id, agent, status, error, result.
     results: list[dict[str, Any]] | None
+    # Subagent results merged into one view, then the coverage verdict on that view.
+    aggregate: dict[str, Any] | None
+    coverage: dict[str, Any] | None
 
 
 def start_state(topic: str, documents: list[dict[str, str]] | None = None) -> CoordinatorState:
@@ -70,6 +75,8 @@ def start_state(topic: str, documents: list[dict[str, str]] | None = None) -> Co
         "tasks": None,
         "documents": documents or [],
         "results": None,
+        "aggregate": None,
+        "coverage": None,
     }
 
 
@@ -125,6 +132,12 @@ def build_coordinator(llm: Callable = ask_llm, checkpointer: Any = None):
     def run_research(state: CoordinatorState) -> dict:
         return {"results": run_subagents(state["tasks"], state["brief"], state["documents"], llm)}
 
+    def merge_results(state: CoordinatorState) -> dict:
+        return {"aggregate": aggregate_results(state["tasks"], state["results"])}
+
+    def check_coverage(state: CoordinatorState) -> dict:
+        return {"coverage": evaluate_coverage(state["brief"], state["aggregate"], llm)}
+
     def route_after_assessment(state: CoordinatorState) -> str:
         # The hub's control flow is ordinary code. Claude supplies the judgement,
         # and this limit guarantees the conversation ends.
@@ -138,13 +151,19 @@ def build_coordinator(llm: Callable = ask_llm, checkpointer: Any = None):
     graph.add_node("write_brief", write_brief)
     graph.add_node("decompose_topic", decompose_topic)
     graph.add_node("run_research", run_research)
+    graph.add_node("aggregate_results", merge_results)
+    graph.add_node("evaluate_coverage", check_coverage)
+
+    
     graph.add_edge(START, "assess_topic")
     graph.add_conditional_edges("assess_topic", route_after_assessment, ["ask_user", "write_brief"])
     graph.add_edge("ask_user", "assess_topic")
     # Decomposition is only reachable through this edge, after clarification ends.
     graph.add_edge("write_brief", "decompose_topic")
     graph.add_edge("decompose_topic", "run_research")
-    graph.add_edge("run_research", END)
+    graph.add_edge("run_research", "aggregate_results")
+    graph.add_edge("aggregate_results", "evaluate_coverage")
+    graph.add_edge("evaluate_coverage", END)
 
     # interrupt() needs a checkpointer: it saves the state while waiting for the user.
     return graph.compile(checkpointer=checkpointer or InMemorySaver())
