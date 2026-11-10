@@ -1,4 +1,4 @@
-"""Run the coordinator from the terminal: python -m research_coordinator "topic"."""
+"""Run the coordinator from the terminal: python -m research_coordinator "topic" [--json]."""
 
 import json
 import sys
@@ -9,28 +9,41 @@ import ollama
 from langgraph.types import Command
 
 from research_coordinator.coordinator import build_coordinator, start_state
-from research_coordinator.llm import CoordinatorError
+from research_coordinator.llm import CoordinatorError, ask_llm
+from research_coordinator.report import CallLog, render_call_log, render_report, step_line
 
 
-def run(topic: str) -> dict:
-    coordinator = build_coordinator()
+def run(topic: str, llm: CallLog) -> dict:
+    coordinator = build_coordinator(llm)
     # The thread_id names this run, so a resume finds the right saved state.
     config = {"configurable": {"thread_id": str(uuid4())}}
 
-    result = coordinator.invoke(start_state(topic), config)
-    while "__interrupt__" in result:
-        questions = result["__interrupt__"][0].value["questions"]
-        print("\nThe coordinator has some questions (press Enter to skip one):")
-        answers = [input(f"\n{question}\n> ") for question in questions]
-        result = coordinator.invoke(Command(resume=answers), config)
-    return {"brief": result["brief"], "tasks": result["tasks"], "results": result["results"],
-            "aggregate": result["aggregate"], "coverage": result["coverage"]}
+    print("Steps")
+    next_input = start_state(topic)
+    while next_input is not None:
+        current, next_input = next_input, None
+        for chunk in coordinator.stream(current, config, stream_mode="updates"):
+            if "__interrupt__" in chunk:
+                questions = chunk["__interrupt__"][0].value["questions"]
+                print("\nThe coordinator has some questions (press Enter to skip one):")
+                answers = [input(f"\n{question}\n> ") for question in questions]
+                print()
+                next_input = Command(resume=answers)
+                continue
+            for node, update in chunk.items():
+                print(step_line(node, update))
+
+    state = coordinator.get_state(config).values
+    return {key: state[key] for key in ("brief", "tasks", "results", "aggregate", "coverage")}
 
 
 def main() -> int:
-    topic = " ".join(sys.argv[1:]) or input("Research topic: ")
+    args = [arg for arg in sys.argv[1:] if arg != "--json"]
+    as_json = len(args) != len(sys.argv) - 1
+    topic = " ".join(args) or input("Research topic: ")
+    llm = CallLog(ask_llm)
     try:
-        plan = run(topic)
+        plan = run(topic, llm)
     except ValueError as error:
         print(error, file=sys.stderr)
         return 2
@@ -52,9 +65,12 @@ def main() -> int:
     except anthropic.APIStatusError as error:
         print(f"Claude API error ({error.status_code}): {error.message}", file=sys.stderr)
         return 1
+    finally:
+        # Shown even when the run fails, so the failing call is visible.
+        if llm.calls:
+            print(render_call_log(llm.calls))
 
-    print("\nResearch plan:\n")
-    print(json.dumps(plan, indent=2))
+    print(json.dumps(plan, indent=2) if as_json else render_report(plan))
     return 0
 
 
